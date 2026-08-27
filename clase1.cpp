@@ -15,6 +15,34 @@ int main(){
     cout << "Monedas: " << monedas << endl;
     cout << "Velocidad: " << velocidad << endl;
     cout << "¿Está vivo? " << (estavivo ? "Sí" : "No") << endl;
+    cout << "Tiene llave?: " <<tienellave << end1;
+    
+
+
+    cout << "Atacamos a pepo y le quitamos 100 de puntos de vida! pipipipi" << endl;
+
+    vida = vida - 100;
+
+    cout << "" << endl;
+    cout << "Ficha" << endl;
+    cout << "Nombre del personaje: " << NombrePersonaje << endl;
+    cout << "Vida: " << vida << endl;
+    cout << "Monedas: " << monedas << endl;
+    cout << "Velocidad: " << velocidad << endl;
+    cout << "¿Está vivo? " << (estavivo ? "Sí" : "No") << endl;
+
+    cout << "Ahora pepo asalta a un enemigo y le roba 10 monedas!" << endl;
+    monedas = monedas + 10;
+    cout << "Monedas: " << monedas << endl;
+
+cout << "" << endl;
+    cout << "Ficha" << endl;
+    cout << "Nombre del personaje: " << NombrePersonaje << endl;
+    cout << "Vida: " << vida << endl;
+    cout << "Monedas: " << monedas << endl;
+    cout << "Velocidad: " << velocidad << endl;
+    cout << "¿Está vivo? " << (estavivo ? "Sí" : "No") << endl;
+
 
     return 0;
 }
