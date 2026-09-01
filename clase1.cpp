@@ -7,9 +7,9 @@ int monedas = 0;
 float velocidad = 4.5f;
 bool estavivo = false;
 
-string personajevivo(){
+string personajevivo(int vida){
     string respuesta = "";
-    if(vida >= 0){
+    if(vida <= 0){
         respuesta = "NO";
     }else{
         respuesta = "Si";
