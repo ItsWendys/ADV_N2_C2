@@ -26,8 +26,8 @@ int main(){
     cout << "Vida: " << vida << endl;
     cout << "Monedas: " << monedas << endl;
     cout << "Velocidad: " << velocidad << endl;
-    cout << "¿Está vivo? " << (estavivo ? "Sí" : "No") << endl;
-    cout << "Tiene llave?: " <<tienellave << end1;
+    cout << "¿Está vivo? " << personajevivo(vida) << endl;
+    cout << "Tiene llave?: " << tienellave << end1;
     
 
 
