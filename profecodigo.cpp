@@ -1,96 +1,114 @@
 #include <iostream>
 using namespace std;
 
-string personajeVivo(int vida)
+class Personaje
 {
-    string respuesta = "";
-    if (vida <= 0)
-    {
-        respuesta = "No... GAME OVER!";
-    }
-    else
-    {
-        respuesta = "Si";
-    }
-    return respuesta;
-}
+private:
+    // Atributos de la clase, Cómo es la clase/objeto?
+    string nombre;
+    int vida;
+    bool vivo;
+    int danioJugador;
 
-string mostrarLlave(bool llave){
-    string respuesta = "";
-    if (llave == true)
-    {
-        respuesta = "Encontro la llave!";
-    }else{
-        respuesta = "Aun no ha encontrado la llave!";
-    }
-    return respuesta;
-}
+public:
+    // La siguiente función se llama CONSTRUCTOR, se encargará de crear objetos de la clase PERSONAJE
+    Personaje(string nombrePersonaje, int vidaPersonaje, bool personajeVivo, int danioPersonaje) : 
+    nombre(nombrePersonaje), vida(vidaPersonaje), vivo(personajeVivo), danioJugador(danioPersonaje) {}
 
-string mostrarFicha(string nombre, int vida, int nivel, int coins, float speed, bool llave)
-{
-    cout << "" << endl;
-    cout << "Ficha Tecnica" << endl;
-    cout << "=============" << endl;
-    cout << "Nombre: " << nombre << endl;
-    cout << "Vida: " << vida << endl;
-    cout << "Nivel: " << nivel << endl;
-    cout << "Monedas: " << coins << endl;
-    cout << "Velocidad: " << speed << endl;
-    cout << "Esta Vivo?: " << personajeVivo(vida) << endl;
-    cout << "Tiene llave?: " << mostrarLlave(llave) << endl;
-    cout << "" << endl;
-}
+    // Una función VOID, no retorna nada, solo ejecuta una acción
+    // Métodos de la clase, Qué puede hacer la clase/objeto?
+    void avanzar(string nombrePersonaje)
+    {
+        cout << nombrePersonaje << " avanza..." << endl;
+    }
 
-string accesoArea51(int nivel, bool llave)
-{
-    string respuesta = "";
-    if (nivel >= 5 && llave == true)
+    void saltar(string nombrePersonaje)
     {
-        respuesta = "Ha ingresado al Area 51!";
+        cout << nombrePersonaje << " salta!" << endl;
     }
-    else
+
+    void recibirDanio(string nombrePersonaje, int danio)
     {
-        respuesta = "Los secretos del Area 51 siguen ocultos para Ud.";
+        // vida = vida - danio;
+        vida -= danio;
+
+        // if (vida < 0) {
+        //     vida = 0;
+        // }
+        if (vida < 0)
+            vida = 0;
+
+        cout << nombrePersonaje << " recibe " << danio << " de daño." << endl;
+        cout << nombrePersonaje << " tiene " << vida << " de vida restante." << endl;
+
+        if (vida == 0)
+        {
+            vivo = false;
+            cout << "Game Over!!" << endl;
+        }
     }
-    return respuesta;
-}
+
+    void verEstado(string nombrePersonaje)
+    {
+        cout << "Estado de " << nombrePersonaje << endl;
+        cout << "Vida: " << vida << endl;
+        cout << "Está vivo " << nombrePersonaje << "?" << (vivo ? "Si" : "No") << endl;
+    }
+};
 
 int main()
 {
-    string nombrePersonaje = "Aquiles Baeza";
-    int vida = 500;
-    int monedas = 0;
-    float velocidad = 4.5f;
-    bool estaVivo = true;
-    bool tieneLlave = false;
-    int nivel = 1;
+    int opcion = 0;
+    int vida = 0;
+    bool vivo = true;
+    int danio = 0;
+    string nombre = "";
 
-    mostrarFicha(nombrePersonaje, vida, nivel, monedas, velocidad, tieneLlave);
+    cout << "Vamos a crear nuestro PJ!" << endl;
+    cout << "Nombre del personaje:" << endl;
+    cin >> nombre;
 
-    cout << "Tratando de ingresar al Area 51..." << endl;
-    cout << "El nivel requerido es 5 y necesita una llave..." << endl;
-    accesoArea51(nivel,tieneLlave);
+    cout << "Cuanta vida tendrá " << nombre << "?" << endl;
+    cin >> vida;
 
-    cout << "" << endl;
-    while (vida > 0)
+    Personaje jugador(nombre, vida, vivo, danio);
+
+    while (opcion != 5 && vivo)
     {
-        cout << "Atacamos a nuestro personaje con 100 de danio!" << endl;
-        vida = vida - 100;
+        cout << "Aventuras de "<< nombre << "\nSeleccione una opción [1-5]" << endl;
+        cout << "[1] Avanzar." << endl;
+        cout << "[2] Saltar." << endl;
+        cout << "[3] Recibir Daño." << endl;
+        cout << "[4] Ver Estado Personaje." << endl;
+        cout << "[5] Salir." << endl;
+        cin >> opcion;
+
+        switch (opcion)
+        {
+        case 1:
+            jugador.avanzar(nombre);
+            break;
+        case 2:
+            jugador.saltar(nombre);
+            break;
+        case 3:
+            cout << "Ingrese daño del personaje: \n"
+                 << endl;
+            cin >> danio;
+            jugador.recibirDanio(nombre, danio);
+            break;
+        case 4:
+            jugador.verEstado(nombre);
+            break;
+        case 5:
+            cout << "Apagando motores..." << endl;
+            break;
+        default:
+            cout << "Opción inválida, intente nuevamente..." << endl;
+            opcion = 0;
+            break;
+        }
     }
-    
-    for (int i = 0; i < 5; i++)
-    {
-        cout << "Turno: " << i << endl;
-    }   
-
-    tieneLlave = true;
-    
-    cout << "" << endl;
-    cout << "Por haber encontrado la llave, has subido 4 niveles!" << endl;
-    nivel = nivel + 4;
-
-    mostrarFicha(nombrePersonaje, vida, nivel, monedas, velocidad, tieneLlave);
-    accesoArea51(nivel,tieneLlave);
 
     return 0;
 }
