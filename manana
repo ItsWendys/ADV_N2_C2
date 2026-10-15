@@ -1,0 +1,331 @@
+#include <iostream>
+#include <vector> 
+#include <string>
+using namespace std;
+
+// ==================== CLASE ITEM ====================
+class Item {
+private:
+    string nombre;
+    string descripcion;
+    string tipo;      // "especial" o "cura", el especial no se me ocurre nada mas que solo se usen para los animatronicos y el que cura, cura duh.
+    int valor;
+
+public:
+    Item(string nom = "", string desc = "", string tip = "", int val = 0) {
+        nombre = nom;
+        descripcion = desc;
+        tipo = tip;
+        valor = val;
+    }
+
+    string obtenerNombre() { return nombre; }
+    string obtenerDescripcion() { return descripcion; }
+    string obtenerTipo() { return tipo; }
+    int obtenerValor() { return valor; }
+};
+
+// ==================== INFO DE TUS ESTADISTICAS ====================
+class Personaje {
+private:
+    string nombreCompleto;
+    int vida;
+    int vidaMaxima;
+    bool vivo;
+    vector<Item> inventario;
+
+public:
+    Personaje(string nombre = "", int vidaInicial = 500) {
+        nombreCompleto = nombre;
+        vida = vidaInicial;
+        vidaMaxima = vidaInicial;
+        vivo = true;
+    }
+
+    string obtenerNombre() { return nombreCompleto; }
+    int obtenerVida() { return vida; }
+    bool estaVivo() { return vivo; }
+
+    void recibirDanio(int danio) {
+        // Evita recibir dano si el personaje ya murio.
+        if (!vivo || danio <= 0) return;
+
+        vida -= danio;
+        if (vida < 0) vida = 0;
+
+        cout << "\n¡El animatronico te ha atacado!\n";
+        cout << "Vida restante: " << vida << "/" << vidaMaxima << "\n";
+
+        if (vida == 0) {
+            vivo = false;
+            cout << "\n*** GAME OVER ***\n";
+            cout << "Has desaparecido misteriosamente y los restos de tu cuerpo son irreconocibles...\n";
+        }
+    }
+
+    void curar(int cantidad) {
+        if (!vivo || cantidad <= 0) return;
+
+        int vidaAntes = vida;
+        vida += cantidad;
+        if (vida > vidaMaxima) vida = vidaMaxima;
+
+        int vidaRecuperada = vida - vidaAntes;
+        if (vidaRecuperada > 0) {
+            cout << "¡Te comes la rebanada de pizza y recuperas "
+                 << vidaRecuperada << " puntos de vida!\n";
+            cout << "Vida actual: " << vida << "/" << vidaMaxima << "\n";
+        } else {
+            cout << "Ya tienes la vida al maximo. La pizza no te recupera mas vida.\n";
+        }
+    }
+
+    void agregarItem(Item item) {
+        inventario.push_back(item);
+        cout << "Has recogido: " << item.obtenerNombre() << endl;
+    }
+
+    void mostrarInventario() {
+        cout << "\n----- INVENTARIO -----\n";
+        if (inventario.empty()) {
+            cout << "El inventario esta vacio...\n";
+        } else {
+            for (int i = 0; i < inventario.size(); i++) {
+                cout << "[" << i + 1 << "] " << inventario[i].obtenerNombre() 
+                     << " - " << inventario[i].obtenerDescripcion() << endl;
+            }
+        }
+        cout << "---------------------\n";
+    }
+
+    // bool para saber si tiene o no tiene cosas en el inventario
+    bool inventarioVacio() {
+        return inventario.empty();
+    }
+
+    bool usarItem(int indice, string& nombreItemUsado) {
+        if (indice < 0 || indice >= inventario.size()) {
+            cout << "Opcion invalida.\n";
+            return false;
+        }
+        nombreItemUsado = inventario[indice].obtenerNombre();
+        
+        if (inventario[indice].obtenerTipo() == "cura") {
+            curar(inventario[indice].obtenerValor());
+        }
+
+        inventario.erase(inventario.begin() + indice);
+        return true;
+    }
+
+    void mostrarEstado() {
+        cout << "\n----- ESTADO -----\n";
+        cout << "Nombre: " << nombreCompleto << endl;
+        cout << "Vida: " << vida << endl;
+        cout << "Estado: " << (vivo ? "Vivo" : "Muerto") << endl;
+        cout << "------------------\n";
+    }
+};
+
+// ==================== FUNCION ====================
+int main() {
+    string nombreJugador;
+    int opcion;
+
+    // ---------- INTRO DEL JUEGO ----------
+    cout << "============================================\n";
+    cout << "         PARTES Y MANTENCION\n";
+    cout << "============================================\n\n";
+    cout << "¡Bienvenido a la pizzeria!. Eres el nuevo encargado de\n";
+    cout << "reparar y mantener a los animatronicos, ¡que emocion!.\n\n";
+    cout << "Por favor ingresa tu nombre completo para el registro:\n";
+    getline(cin, nombreJugador);
+
+    cout << "\n--------------------------------------------------\n";
+    cout << "Yo " << nombreJugador << " acepto los terminos y condiciones\n";
+    cout << "de trabajar reparando animatronicos sin derecho a\n";
+    cout << "demandar o reclamar por alguna perdida de mis\n";
+    cout << "extremidades durante mis horas de trabajo.\n";
+    cout << "--------------------------------------------------\n\n";
+
+    // ELECCIÓN DEL CONTRATO
+    cout << "Que deseas hacer?\n";
+    cout << "[1] Aceptar el contrato\n";
+    cout << "[2] Rechazar el contrato\n";
+    cout << "Elige: ";
+    int decisionContrato;
+    cin >> decisionContrato;
+    cin.ignore();
+
+    if (decisionContrato == 2) {
+        cout << "\n*** GAME OVER ***\n";
+        cout << "Rechazaste el contrato y te fuiste del lugar.\n";
+        cout << "Al menos saliste con todas tus extremidades intactas...\n";
+        return 0;
+    }
+
+    cout << "\nHas aceptado el contrato. Bienvenido al equipo.\n\n";
+
+    Personaje jugador(nombreJugador, 500);
+
+    vector<Item> mesa;
+    mesa.push_back(Item("Soplador", "Saca el polvo de los ojos del animatronico con delicadeza", "especial", 0));
+    mesa.push_back(Item("Guante anti-cortes", "Te protege de posibles cortes o mordidas", "especial", 0));
+    mesa.push_back(Item("Pedazo de pizza", "Una rebanada deliciosa sin pina. Sube 100 de vida", "cura", 100));
+    mesa.push_back(Item("Pinzas", "Para remover dientes o cosas con extremo cuidado", "especial", 0));
+
+    bool tareaCompletada = false;
+    bool diaTerminado = false;
+
+    cout << "=== DIA 1 - NOCHE DE TRABAJO ===\n\n";
+    cout << "Oh no!! Nuestro pobre Inacapitron parece tener\n";
+    cout << "invitados no deseados dentro de su boca.\n\n";
+    cout << "Enfrente tuyo hay una mesa con varios objetos\n";
+    cout << "a tu disposicion para realizar la limpieza.\n\n";
+
+    while (!tareaCompletada && jugador.estaVivo() && !diaTerminado) {
+        cout << "\n========== MENU ==========\n";
+        cout << "[1] Ver estado\n";
+        cout << "[2] Ver inventario\n";
+        cout << "[3] Ver encargo\n";
+        cout << "[4] Recoger un objeto de la mesa\n";
+        cout << "[5] Usar un item del inventario en Inacapitron\n";
+        cout << "[6] Salir\n";
+        cout << "==========================\n";
+        cout << "Elige una opcion: ";
+        cin >> opcion;
+        cin.ignore();
+
+        switch (opcion) {
+            case 1:
+                jugador.mostrarEstado();
+                break;
+
+            case 2:
+                jugador.mostrarInventario();
+                break;
+
+            case 3:
+                cout << "\n----- ENCARGO ACTUAL -----\n";
+                cout << "Oh no!! Nuestro pobre Inacapitron parece tener\n";
+                cout << "invitados no deseados dentro de su boca.\n";
+                cout << "Debes limpiarlo usando el objeto adecuado de la mesa.\n";
+                cout << "--------------------------\n";
+                break;
+
+            case 4: {
+                cout << "\n--- OBJETOS EN LA MESA ---\n";
+                for (int i = 0; i < mesa.size(); i++) {
+                    cout << "[" << i + 1 << "] " << mesa[i].obtenerNombre() << endl;
+                }
+                cout << "--------------------------\n";
+                cout << "Que objeto quieres recoger? (0 para cancelar): ";
+                int eleccion;
+                cin >> eleccion;
+                cin.ignore();
+
+                if (eleccion > 0 && eleccion <= mesa.size()) {
+                    jugador.agregarItem(mesa[eleccion - 1]);
+                } else {
+                    cout << "No se recogio nada.\n";
+                }
+                break;
+            }
+
+            case 5: {
+                jugador.mostrarInventario();
+
+                // Si el inventario está vacío, que eliga otra opcion 
+                if (jugador.inventarioVacio()) {
+                    cout << "No tienes ningun item en el inventario para usar.\n";
+                    cout << "Volviendo al menu...\n";
+                    break;
+                }
+
+                if (jugador.obtenerVida() <= 0) break;
+
+                cout << "Que item quieres usar? (numero): ";
+                int indice;
+                cin >> indice;
+                cin.ignore();
+
+                string nombreUsado;
+                bool usoCorrecto = jugador.usarItem(indice - 1, nombreUsado);
+
+                if (usoCorrecto) {
+                    if (nombreUsado == "Pinzas") {
+                        cout << "\nUsas las pinzas para quitar a los invitados no deseados\n";
+                        cout << "de Inacapitron, los cuales resultan ser 6 cucarachas... ew!.\n\n";
+                        cout << "*** TAREA COMPLETADA CON EXITO ***\n";
+                        tareaCompletada = true;
+                    } else if (nombreUsado == "Pedazo de pizza") {
+                        // La pizza ya cura dentro de usarItem(). No causa dano ni cuenta como error.
+                        cout << "El animatronico no te ataca mientras comes la pizza.\n";
+                    } else {
+                        cout << "\nNo creo que esto nos ayude para la limpieza correcta...\n";
+                        cout << "¡Inacapitron se ha enfadado por el error!\n";
+                        jugador.recibirDanio(100);
+                    }
+                }
+                break;
+            }
+
+            case 6:
+                cout << "\nUsted esta en la obligacion de reparar el animatronico,\n";
+                cout << "no puede salir de la habitacion, no puede llamar a nadie,\n";
+                cout << "no puede irse del local hasta que termine su tarea.\n";
+                cout << "Pongase serio.\n";
+                break;
+
+            default:
+                cout << "Opcion invalida, intenta de nuevo.\n";
+                break;
+        }
+    }
+
+    // ---------- ACA SE ACABA TODO DEL DIA UNO ----------
+    if (tareaCompletada && jugador.estaVivo()) {
+        cout << "\nLa tarea que se nos dio fue realizada con exito.\n";
+        cout << "Ya puedes irte a tu casa.\n\n";
+        cout << "Que quieres hacer?\n";
+        cout << "[1] Irse a casa\n";
+        cout << "[2] Quedarse un rato mas\n";
+        cout << "Elige: ";
+        int decision;
+        cin >> decision;
+        cin.ignore();
+
+        if (decision == 2) {
+            cout << "\nBueno, tu no mandas aca, te tienes que ir si o si.\n";
+            cout << "Te sacan del local obligado...\n";
+        }
+
+        cout << "\nTe levantas, sales del local y llegas a tu casa de noche.\n\n";
+
+        // OPCIONES CUANDO ESTAS EN LA CASA
+        cout << "Ya estas en tu casa. Que quieres hacer?\n";
+        cout << "[1] Ver una pelicula mientras comes palomitas\n";
+        cout << "[2] Irte directo a dormir\n";
+        cout << "Elige: ";
+        int eleccionCasa;
+        cin >> eleccionCasa;
+        cin.ignore();
+
+        if (eleccionCasa == 1) {
+            cout << "\nAgarras un bol grande de palomitas, te tiras en el sofa\n";
+            cout << "y pones una pelicula de ciencia ficcion.\n";
+            cout << "Mientras comes piensas:\n";
+            cout << "\"hmm que clase de metodologia de la creatividad usaran\n";
+            cout << "para crear este tipo de peliculas...\"\n";
+            cout << "Sigues comiendo palomitas hasta que te da sueno.\n";
+        } else {
+            cout << "\nTe pones tu pijama mitad Pompompurin y mitad My Melody,\n";
+            cout << "Apagas tu lampara de Keroppi, te tiras encima de la cama y te quedas profundamente dormido...\n";
+        }
+
+        cout << "\nMañana sera tu segundo dia de trabajo...\n\n";
+        cout << "=== FIN DEL DIA 1 ===\n";
+    }
+
+    return 0;
+}
