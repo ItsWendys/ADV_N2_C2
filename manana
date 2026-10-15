@@ -8,7 +8,7 @@ class Item {
 private:
     string nombre;
     string descripcion;
-    string tipo;      // "especial" o "cura", el especial no se me ocurre nada mas que solo se usen para los animatronicos y el que cura, cura duh.
+    string tipo;
     int valor;
 
 public:
