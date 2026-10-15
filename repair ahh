@@ -30,6 +30,7 @@ class Personaje {
 private:
     string nombreCompleto;
     int vida;
+    int vidaMaxima;
     bool vivo;
     vector<Item> inventario;
 
@@ -37,6 +38,7 @@ public:
     Personaje(string nombre = "", int vidaInicial = 500) {
         nombreCompleto = nombre;
         vida = vidaInicial;
+        vidaMaxima = vidaInicial;
         vivo = true;
     }
 
@@ -45,17 +47,37 @@ public:
     bool estaVivo() { return vivo; }
 
     void recibirDanio(int danio) {
+        // Evita recibir dano si el personaje ya murio.
+        if (!vivo || danio <= 0) return;
+
         vida -= danio;
         if (vida < 0) vida = 0;
+
+        cout << "\n¡El animatronico te ha atacado!\n";
+        cout << "Vida restante: " << vida << "/" << vidaMaxima << "\n";
+
         if (vida == 0) {
             vivo = false;
-            cout << "\n*** GAME OVER ***\nHas desaparecido misteriosamente y restos de tu cuerpo son irreconocibles...\n";
+            cout << "\n*** GAME OVER ***\n";
+            cout << "Has desaparecido misteriosamente y los restos de tu cuerpo son irreconocibles...\n";
         }
     }
 
     void curar(int cantidad) {
+        if (!vivo || cantidad <= 0) return;
+
+        int vidaAntes = vida;
         vida += cantidad;
-        cout << "Te has curado " << cantidad << " puntos de vida.\n";
+        if (vida > vidaMaxima) vida = vidaMaxima;
+
+        int vidaRecuperada = vida - vidaAntes;
+        if (vidaRecuperada > 0) {
+            cout << "¡Te comes la rebanada de pizza y recuperas "
+                 << vidaRecuperada << " puntos de vida!\n";
+            cout << "Vida actual: " << vida << "/" << vidaMaxima << "\n";
+        } else {
+            cout << "Ya tienes la vida al maximo. La pizza no te recupera mas vida.\n";
+        }
     }
 
     void agregarItem(Item item) {
@@ -236,8 +258,13 @@ int main() {
                         cout << "de Inacapitron, los cuales resultan ser 6 cucarachas... ew!.\n\n";
                         cout << "*** TAREA COMPLETADA CON EXITO ***\n";
                         tareaCompletada = true;
+                    } else if (nombreUsado == "Pedazo de pizza") {
+                        // La pizza ya cura dentro de usarItem(). No causa dano ni cuenta como error.
+                        cout << "El animatronico no te ataca mientras comes la pizza.\n";
                     } else {
                         cout << "\nNo creo que esto nos ayude para la limpieza correcta...\n";
+                        cout << "¡Inacapitron se ha enfadado por el error!\n";
+                        jugador.recibirDanio(100);
                     }
                 }
                 break;
@@ -302,3 +329,5 @@ int main() {
 
     return 0;
 }
+
+revisar codigo kekeekekekekekekekekekkekekekeke
